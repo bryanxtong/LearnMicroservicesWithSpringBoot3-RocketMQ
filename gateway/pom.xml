@@ -55,7 +55,7 @@
             <artifactId>spring-cloud-starter-consul-config</artifactId>
         </dependency>
 
-<dependency>
+        <dependency>
             <groupId>io.micrometer</groupId>
             <artifactId>micrometer-tracing-bridge-brave</artifactId>
         </dependency>

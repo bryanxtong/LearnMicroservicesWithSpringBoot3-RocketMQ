@@ -1,7 +1,7 @@
 package microservices.book.gamification.game;
 
 import lombok.Value;
-import microservices.book.gamification.challenge.ChallengeSolvedEvent;
+import microservices.book.event.challenge.ChallengeSolvedEvent;
 import microservices.book.gamification.game.domain.BadgeType;
 
 import java.util.List;

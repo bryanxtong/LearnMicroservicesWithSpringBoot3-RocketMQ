@@ -3,7 +3,7 @@
     <include resource="org/springframework/boot/logging/logback/defaults.xml" />
     <include resource="org/springframework/boot/logging/logback/console-appender.xml" />
 
-    <springProperty scope="context" name="rabbitMQHost" source="spring.rabbitmq.host"/>
+<!--    <springProperty scope="context" name="rabbitMQHost" source="spring.rabbitmq.host"/>
 
     <appender name="AMQP"
               class="org.springframework.amqp.rabbit.logback.AmqpAppender">
@@ -20,10 +20,12 @@
         <durable>true</durable>
         <declareExchange>true</declareExchange>
         <deliveryMode>PERSISTENT</deliveryMode>
-    </appender>
+    </appender>-->
 
     <root level="INFO">
         <appender-ref ref="CONSOLE" />
+<!--
         <appender-ref ref="AMQP" />
+-->
     </root>
 </configuration>

@@ -1,30 +1,28 @@
 package microservices.book.multiplication.challenge;
 
-import org.springframework.amqp.core.AmqpTemplate;
+import microservices.book.event.challenge.ChallengeSolvedEvent;
+import org.apache.kafka.clients.producer.ProducerRecord;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Service;
 
 @Service
 public class ChallengeEventPub {
 
-    private final AmqpTemplate amqpTemplate;
-    private final String challengesTopicExchange;
+    private final KafkaTemplate<String, ChallengeSolvedEvent> kafkaTemplate;
+    private final String topic;
 
-    public ChallengeEventPub(final AmqpTemplate amqpTemplate,
-                             @Value("${amqp.exchange.attempts}")
-                             final String challengesTopicExchange) {
-        this.amqpTemplate = amqpTemplate;
-        this.challengesTopicExchange = challengesTopicExchange;
+    public ChallengeEventPub(final  KafkaTemplate<String,ChallengeSolvedEvent> kafkaTemplate,
+                             @Value("${kafka.attempts}")
+                             final String topic) {
+        this.kafkaTemplate = kafkaTemplate;
+        this.topic = topic;
     }
 
     public void challengeSolved(final ChallengeAttempt challengeAttempt) {
         ChallengeSolvedEvent event = buildEvent(challengeAttempt);
-        // Routing Key is 'attempt.correct' or 'attempt.wrong'
-        String routingKey = "attempt." + (event.isCorrect() ?
-                "correct" : "wrong");
-        amqpTemplate.convertAndSend(challengesTopicExchange,
-                routingKey,
-                event);
+        ProducerRecord<String, ChallengeSolvedEvent> producerRecord = new ProducerRecord<>(topic,String.valueOf(event.getUserId()), event);
+        kafkaTemplate.send(producerRecord);
     }
 
     private ChallengeSolvedEvent buildEvent(final ChallengeAttempt attempt) {

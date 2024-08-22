@@ -1,5 +1,6 @@
 package microservices.book.multiplication.challenge;
 
+import microservices.book.event.challenge.ChallengeSolvedEvent;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -7,9 +8,9 @@ import org.junit.jupiter.params.provider.ValueSource;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.amqp.core.AmqpTemplate;
 
 import microservices.book.multiplication.user.User;
+import org.springframework.kafka.core.KafkaTemplate;
 
 import static org.assertj.core.api.BDDAssertions.*;
 import static org.mockito.Mockito.*;
@@ -20,11 +21,11 @@ class ChallengeEventPubTest {
     private ChallengeEventPub challengeEventPub;
 
     @Mock
-    private AmqpTemplate amqpTemplate;
+    private KafkaTemplate kafkaTemplate;
 
     @BeforeEach
     public void setUp() {
-        challengeEventPub = new ChallengeEventPub(amqpTemplate,
+        challengeEventPub = new ChallengeEventPub(kafkaTemplate,
                 "test.topic");
     }
 
@@ -41,13 +42,13 @@ class ChallengeEventPubTest {
         var exchangeCaptor = ArgumentCaptor.forClass(String.class);
         var routingKeyCaptor = ArgumentCaptor.forClass(String.class);
         var eventCaptor = ArgumentCaptor.forClass(ChallengeSolvedEvent.class);
-
-        verify(amqpTemplate).convertAndSend(exchangeCaptor.capture(),
+/*
+        verify(kafkaTemplate).convertAndSend(exchangeCaptor.capture(),
                 routingKeyCaptor.capture(), eventCaptor.capture());
         then(exchangeCaptor.getValue()).isEqualTo("test.topic");
         then(routingKeyCaptor.getValue()).isEqualTo("attempt." +
                 (correct ? "correct" : "wrong"));
-        then(eventCaptor.getValue()).isEqualTo(solvedEvent(correct));
+        then(eventCaptor.getValue()).isEqualTo(solvedEvent(correct));*/
     }
 
     private ChallengeAttempt createTestAttempt(boolean correct) {

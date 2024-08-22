@@ -1,3 +1,4 @@
+/*
 package microservices.book.gamification.challenge;
 
 import lombok.Value;
@@ -11,3 +12,4 @@ public class ChallengeSolvedEvent {
     long userId;
     String userAlias;
 }
+*/

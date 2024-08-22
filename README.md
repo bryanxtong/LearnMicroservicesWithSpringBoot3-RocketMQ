@@ -1,4 +1,4 @@
-# Learn Microservices with Spring Boot 3 - Chapter 8 - 4/4（Replace RabbitMq with Kafka）
+# Learn Microservices with Spring Boot 3 - Chapter 8 - 4/4（Replace RabbitMQ with Kafka）
 This repository contains the source code of the practical use case described in the book [Learn Microservices with Spring Boot 3 (3rd Edition)](https://link.springer.com/book/10.1007/978-1-4842-9757-5).
 The book follows a pragmatic approach to building a Microservice Architecture. You start with a small monolith and examine the pros and cons that come with a move to microservices.
 

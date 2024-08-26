@@ -25,7 +25,6 @@ public class KafkaAggregateLogsKeyingStrategy extends ContextAwareBase implement
         } catch (UnknownHostException e) {
             throw new RuntimeException(e);
         }
-        //final String hostname = context.getProperty("host");
         final String hostPort = context.getProperty("port");
         final String applicationId = context.getProperty("applicationId");
 
@@ -36,7 +35,6 @@ public class KafkaAggregateLogsKeyingStrategy extends ContextAwareBase implement
             }
         } else {
             String keys = hostName + "-" + hostPort + "-" + applicationId;
-            System.out.println("keys ====>"+keys);
             kafkaKeyHash = ByteBuffer.allocate(4).putInt(keys.hashCode()).array();
         }
     }

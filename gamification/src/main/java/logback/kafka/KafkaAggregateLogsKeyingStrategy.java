@@ -36,7 +36,6 @@ public class KafkaAggregateLogsKeyingStrategy extends ContextAwareBase implement
             }
         } else {
             String keys = hostName + "-" + hostPort + "-" + applicationId;
-            System.out.println("keys ====>"+keys);
             kafkaKeyHash = ByteBuffer.allocate(4).putInt(keys.hashCode()).array();
         }
     }

@@ -55,11 +55,11 @@
             <artifactId>spring-cloud-starter-consul-config</artifactId>
         </dependency>
 
-        <dependency>
+<!--        <dependency>
             <groupId>io.micrometer</groupId>
             <artifactId>micrometer-tracing-bridge-brave</artifactId>
-        </dependency>
-        <dependency>
+        </dependency>-->
+<!--        <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter</artifactId>
             <exclusions>
@@ -68,10 +68,22 @@
                     <artifactId>spring-boot-starter-logging</artifactId>
                 </exclusion>
             </exclusions>
-        </dependency>
-        <dependency>
+        </dependency>-->
+<!--        <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-log4j2</artifactId>
+        </dependency>-->
+
+        <!--logback logs to kafka-->
+        <dependency>
+            <groupId>org.apache.kafka</groupId>
+            <artifactId>kafka-clients</artifactId>
+        </dependency>
+        <!--logback kafka appender for testing-->
+        <dependency>
+            <groupId>com.github.danielwegener</groupId>
+            <artifactId>logback-kafka-appender</artifactId>
+            <version>0.2.0-RC2</version>
         </dependency>
 
     </dependencies>

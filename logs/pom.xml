@@ -5,7 +5,7 @@
 	<parent>
 		<groupId>org.springframework.boot</groupId>
 		<artifactId>spring-boot-starter-parent</artifactId>
-		<version>3.1.2</version>
+		<version>3.3.2</version>
 		<relativePath/> <!-- lookup parent from repository -->
 	</parent>
 	<groupId>microservices.book</groupId>
@@ -15,7 +15,7 @@
 	<description>Logs Microservice</description>
 	<properties>
 		<java.version>17</java.version>
-		<spring-cloud.version>2022.0.3</spring-cloud.version>
+		<spring-cloud.version>2023.0.3</spring-cloud.version>
 	</properties>
 	<dependencies>
 		<dependency>
@@ -23,8 +23,8 @@
 			<artifactId>spring-boot-starter-actuator</artifactId>
 		</dependency>
 		<dependency>
-			<groupId>org.springframework.boot</groupId>
-			<artifactId>spring-boot-starter-amqp</artifactId>
+			<groupId>org.springframework.kafka</groupId>
+			<artifactId>spring-kafka</artifactId>
 		</dependency>
 		<dependency>
 			<groupId>org.springframework.boot</groupId>

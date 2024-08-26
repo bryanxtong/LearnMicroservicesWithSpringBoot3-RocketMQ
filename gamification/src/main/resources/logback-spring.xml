@@ -3,29 +3,46 @@
     <include resource="org/springframework/boot/logging/logback/defaults.xml" />
     <include resource="org/springframework/boot/logging/logback/console-appender.xml" />
 
-<!--    <springProperty scope="context" name="rabbitMQHost" source="spring.rabbitmq.host"/>
+    <appender name="CONSOLE" class="ch.qos.logback.core.ConsoleAppender">
+        <encoder>
+            <pattern>%d{yyyy-MM-dd HH:mm:ss.SSS} [%thread] %-5level %logger{36} - %msg%n</pattern>
+        </encoder>
+    </appender>
 
-    <appender name="AMQP"
-              class="org.springframework.amqp.rabbit.logback.AmqpAppender">
-        <layout>
-            <pattern>%d{HH:mm:ss.SSS} [%t] %logger{36} - %msg</pattern>
-        </layout>
+    <!--[host-port-applicationId] as kafka key and host is determined with application code-->
+    <springProperty scope="context" name="applicationId" source="spring.application.name" defaultValue="gamification"/>
+    <springProperty scope="context" name="port" source="server.port" defaultValue="8081"/>
 
-        <applicationId>gamification</applicationId>
-        <host>${rabbitMQHost:-localhost}</host>
-        <routingKeyPattern>%property{applicationId}.%p</routingKeyPattern>
-        <exchangeName>logs.topic</exchangeName>
-        <generateId>true</generateId>
-        <charset>UTF-8</charset>
-        <durable>true</durable>
-        <declareExchange>true</declareExchange>
-        <deliveryMode>PERSISTENT</deliveryMode>
-    </appender>-->
+    <!-- This is the kafkaAppender -->
+    <appender name="kafkaAppender" class="logback.kafka.KafkaAppenderWithHeader">
+        <encoder>
+            <pattern>%d{yyyy-MM-dd HH:mm:ss.SSS} [%thread] %-5level %logger{36} - %msg%n</pattern>
+        </encoder>
+        <topic>logs</topic>
+        <!--<keyingStrategy class="com.github.danielwegener.logback.kafka.keying.NoKeyKeyingStrategy" />-->
+        <keyingStrategy class="logback.kafka.KafkaAggregateLogsKeyingStrategy" />
+        <deliveryStrategy class="com.github.danielwegener.logback.kafka.delivery.AsynchronousDeliveryStrategy" />
+
+
+        <!-- Optional parameter to use a fixed partition -->
+<!--
+        <partition>4</partition>
+-->
+
+        <!-- Optional parameter to include log timestamps into the kafka message -->
+        <!-- <appendTimestamp>true</appendTimestamp> -->
+
+        <!-- each <producerConfig> translates to regular kafka-client config (format: key=value) -->
+        <!-- producer configs are documented here: https://kafka.apache.org/documentation.html#newproducerconfigs -->
+        <!-- bootstrap.servers is the only mandatory producerConfig -->
+        <producerConfig>bootstrap.servers=localhost:19092</producerConfig>
+
+        <!-- this is the fallback appender if kafka is not available. -->
+        <appender-ref ref="CONSOLE" />
+    </appender>
 
     <root level="INFO">
         <appender-ref ref="CONSOLE" />
-<!--
-        <appender-ref ref="AMQP" />
--->
+        <appender-ref ref="kafkaAppender" />
     </root>
 </configuration>

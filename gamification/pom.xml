@@ -86,10 +86,14 @@
                 </exclusion>
             </exclusions>
         </dependency>
-
-        <dependency>
+<!--        <dependency>
             <groupId>io.micrometer</groupId>
             <artifactId>micrometer-tracing-bridge-brave</artifactId>
+        </dependency>-->
+        <dependency>
+            <groupId>com.github.danielwegener</groupId>
+            <artifactId>logback-kafka-appender</artifactId>
+            <version>0.2.0-RC2</version>
         </dependency>
     </dependencies>
     <dependencyManagement>

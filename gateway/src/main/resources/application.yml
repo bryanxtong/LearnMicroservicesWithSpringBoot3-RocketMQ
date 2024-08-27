@@ -39,7 +39,35 @@ spring:
           args:
             retries: 3
             methods: GET,POST
-# Uncomment the configuration below if you want to enable route matching logs
-#logging:
-  #  level:
-    #    org.springframework.cloud.gateway.handler.predicate: trace
+      observability:
+        enabled: true
+      #httpserver:
+        #wiretap: true
+      #httpclient:
+        #wiretap: true
+  reactor:
+    context-propagation: auto
+##working with default logback configuration for distributed tracing
+logging:
+  pattern:
+    level: "[${spring.application.name:-},%X{traceId:-},%X{spanId:-}] "
+  include-application-name: false
+  level:
+    reactor.netty: DEBUG
+    org.springframework.cloud.gateway.handler.predicate: trace
+    #io.micrometer: TRACE
+
+management:
+  tracing:
+    sampling:
+      probability: 1.0
+    enabled: true
+  #endpoint:
+    #gateway:
+      #enabled: true
+  #endpoints:
+    #web:
+      #exposure:
+        #include: health, gateway
+    #propagation:
+      #type: w3c

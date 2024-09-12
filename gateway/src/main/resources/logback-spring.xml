@@ -33,7 +33,10 @@
         <!-- each <producerConfig> translates to regular kafka-client config (format: key=value) -->
         <!-- producer configs are documented here: https://kafka.apache.org/documentation.html#newproducerconfigs -->
         <!-- bootstrap.servers is the only mandatory producerConfig -->
+<!--
         <producerConfig>bootstrap.servers=${SPRING_CLOUD_KAFKA_HOST:-localhost}:9094</producerConfig>
+-->
+        <producerConfig>bootstrap.servers=${SPRING_CLOUD_KAFKA_HOST:-localhost}:9092</producerConfig>
 
         <!-- this is the fallback appender if kafka is not available. -->
         <appender-ref ref="CONSOLE" />

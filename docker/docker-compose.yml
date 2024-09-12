@@ -1,10 +1,14 @@
-version: "3"
+version: "3.9"
 
 services:
   frontend:
     image: challenges-frontend:1.0
+    environment:
+      - SPRING_CLOUD_GATEWAY_HOST=gateway
     ports:
       - '3000:80'
+    networks:
+      - microservices
   multiplication:
     image: multiplication:0.0.1-SNAPSHOT
     environment:

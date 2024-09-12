@@ -71,3 +71,20 @@ management:
         #include: health, gateway
     #propagation:
       #type: w3c
+---
+spring:
+  config:
+    activate:
+      on-profile: docker
+
+  cloud:
+      globalcors:
+        cors-configurations:
+          '[/**]':
+            allowedOrigins: "http://challenges-frontend:3000"
+            allowedHeaders:
+              - "*"
+            allowedMethods:
+              - "GET"
+              - "POST"
+              - "OPTIONS"

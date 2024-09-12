@@ -12,6 +12,6 @@
 	{
 		"key": "config/defaults,docker/application.yml",
 		"flags": 0,
-		"value": "c3ByaW5nOgogIHJhYmJpdG1xOgogICAgaG9zdDogcmFiYml0bXEKICBjbG91ZDoKICAgIGNvbnN1bDogCiAgICAgIGRpc2NvdmVyeTogCiAgICAgICAgaW5zdGFuY2UtaWQ6ICR7c3ByaW5nLmFwcGxpY2F0aW9uLm5hbWV9LSR7cmFuZG9tLmludCgxMDAwKX0="
+		"value": "c3ByaW5nOgogIGNsb3VkOgogICAgY29uc3VsOgogICAgICBkaXNjb3Zlcnk6CiAgICAgICAgaW5zdGFuY2UtaWQ6ICR7c3ByaW5nLmFwcGxpY2F0aW9uLm5hbWV9LSR7cmFuZG9tLmludCgxMDAwKX0KbG9nZ2luZzoKICBsZXZlbDoKICAgIG9yZy5zcHJpbmdmcmFtZXdvcmsuY29yZS5lbnY6IERFQlVH"
 	}
 ]

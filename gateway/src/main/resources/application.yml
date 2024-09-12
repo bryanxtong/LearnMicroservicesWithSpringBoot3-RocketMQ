@@ -83,15 +83,15 @@ spring:
       on-profile: docker
   cloud:
     gateway:
-        globalcors:
-          cors-configurations:
-            '[/**]':
-              allowedOrigins: "http://challenges-frontend:3000"
-              allowedHeaders:
-                - "*"
-              allowedMethods:
-                - "GET"
-                - "POST"
-                - "OPTIONS"
+      globalcors:
+        cors-configurations:
+          '[/**]':
+            allowedOrigins: "http://challenges-frontend:3000"
+            allowedHeaders:
+              - "*"
+            allowedMethods:
+              - "GET"
+              - "POST"
+              - "OPTIONS"
   kafka:
     bootstrap-servers: ${SPRING_CLOUD_KAFKA_HOST}:9092

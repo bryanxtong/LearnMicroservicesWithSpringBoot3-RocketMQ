@@ -46,6 +46,15 @@ gateway$ ./mvnw spring-boot:build-image
 logs$ ./mvnw spring-boot:build-image
 ```
 
+or
+
+```bash
+multiplication$ docker build -t  multiplication:0.0.1-SNAPSHOT .
+gamification$ docker build -t  gamification:0.0.1-SNAPSHOT .
+gateway$ docker build -t  gateway:0.0.1-SNAPSHOT .
+logs$ docker build -t  logs:0.0.1-SNAPSHOT .
+```
+
 Then, build the consul importer from the `docker/consul` folder:
 
 ```bash

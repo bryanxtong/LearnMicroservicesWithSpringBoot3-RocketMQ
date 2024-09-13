@@ -49,6 +49,8 @@ spring:
         #wiretap: true
   reactor:
     context-propagation: auto
+  kafka:
+    bootstrap-servers: ${SPRING_CLOUD_KAFKA_HOST:localhost}:9094
 ##working with default logback configuration for distributed tracing
 logging:
   pattern:
@@ -76,6 +78,7 @@ management:
   zipkin:
     tracing:
       endpoint: http://${SPRING_CLOUD_ZIPKIN_HOST:localhost}:9411/api/v2/spans
+
 ---
 spring:
   config:

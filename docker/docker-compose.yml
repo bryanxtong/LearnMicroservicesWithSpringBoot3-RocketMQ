@@ -35,6 +35,7 @@ services:
       - microservices
   gateway:
     image: gateway:0.0.1-SNAPSHOT
+    container_name: gateway
     ports:
       - '8000:8000'
     environment:
@@ -59,45 +60,76 @@ services:
       - consul-importer
     networks:
       - microservices
-  consul-importer:
-    image: consul-importer:1.0
-    depends_on:
-      - consul-dev
+  namesrv:
+    image: apache/rocketmq:5.3.0
+    container_name: rmqnamesrv
+    ports:
+      - 9876:9876
     networks:
       - microservices
-  consul-dev:
-    image: hashicorp/consul:1.19.0
-    container_name: consul
+    command: sh mqnamesrv
+  broker:
+    image: apache/rocketmq:5.3.0
+    container_name: rmqbroker
     ports:
-      - '8500:8500'
-      - '8600:8600/udp'
-    command: 'agent -dev -node=learnmicro -client=0.0.0.0 -log-level=INFO'
-    networks:
-      - microservices
-  kafka:
-    image: 'bitnami/kafka:latest'
-    ports:
-      - '9094:9094' #1
+      - 10909:10909
+      - 10911:10911
+      - 10912:10912
     environment:
-      - KAFKA_CFG_NODE_ID=0
-      - KAFKA_CFG_CONTROLLER_BROKER_ID=0
-      - KAFKA_CFG_PROCESS_ROLES=controller,broker
-      - KAFKA_CFG_LISTENERS=PLAINTEXT://:9092,CONTROLLER://:9093,EXTERNAL://:9094 #2
-      - KAFKA_CFG_ADVERTISED_LISTENERS=PLAINTEXT://kafka:9092,EXTERNAL://localhost:9094 #3
-      - KAFKA_CFG_LISTENER_SECURITY_PROTOCOL_MAP=CONTROLLER:PLAINTEXT,EXTERNAL:PLAINTEXT,PLAINTEXT:PLAINTEXT #4
-      - KAFKA_CFG_CONTROLLER_QUORUM_VOTERS=0@kafka:9093
-      - KAFKA_CFG_CONTROLLER_LISTENER_NAMES=CONTROLLER
+      - NAMESRV_ADDR=rmqnamesrv:9876
+    depends_on:
+      - namesrv
     networks:
       - microservices
-  kafka-ui:
-    image: 'provectuslabs/kafka-ui:latest'
-    ports:
-      - '8080:8080'
+    command: sh mqbroker
+  proxy:
+    image: apache/rocketmq:5.3.0
+    container_name: rmqproxy
+    networks:
+      - microservices
     depends_on:
-      - kafka
+      - broker
+      - namesrv
+    ports:
+      - 8080:8080
+      - 8081:8081
+    restart: on-failure
     environment:
-      - KAFKA_CLUSTERS_0_NAME=local #5
-      - KAFKA_CLUSTERS_0_BOOTSTRAPSERVERS=kafka:9092 #6
+      - NAMESRV_ADDR=rmqnamesrv:9876
+    command: sh mqproxy
+  nacos:
+    image: nacos/nacos-server:v2.4.2
+    container_name: nacos-standalone-mysql
+    env_file:
+      - ./env/nacos-standlone-mysql.env
+    volumes:
+      - ./standalone-logs/:/home/nacos/logs
+    ports:
+      - "8848:8848"
+      - "9848:9848"
+    depends_on:
+      mysql:
+        condition: service_healthy
+    restart: always
+    networks:
+      - microservices
+  mysql:
+    container_name: mysql
+    build:
+      context: .
+      dockerfile: ./image/mysql/8/Dockerfile
+    image: example/mysql:8.0.30
+    env_file:
+      - ./env/mysql.env
+    volumes:
+      - ./mysql:/var/lib/mysql
+    ports:
+      - "3306:3306"
+    healthcheck:
+      test: [ "CMD", "mysqladmin" ,"ping", "-h", "localhost" ]
+      interval: 5s
+      timeout: 10s
+      retries: 10
     networks:
       - microservices
   zipkin:

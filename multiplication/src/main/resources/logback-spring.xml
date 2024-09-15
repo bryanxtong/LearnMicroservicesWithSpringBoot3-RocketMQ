@@ -5,39 +5,26 @@
         </encoder>
     </appender>
 
-    <!--[host-port-applicationId] as kafka key and host is determined with application code-->
+    <!--[host-port-applicationId] as rocketmq key and host is determined with application code-->
     <springProperty scope="context" name="applicationId" source="spring.application.name" defaultValue="multiplication"/>
     <springProperty scope="context" name="port" source="server.port" defaultValue="8080"/>
 
     <!-- This is the kafkaAppender -->
-    <appender name="kafkaAppender" class="logback.kafka.KafkaAppenderWithHeader">
-        <encoder>
+    <appender name="rocketMQAppender" class="org.apache.rocketmq.logappender.logback.RocketmqLogbackAppender">
+       <!-- <encoder>
             <pattern>%d{yyyy-MM-dd HH:mm:ss.SSS} [%thread] %-5level %logger{36} - %msg%n</pattern>
-        </encoder>
+        </encoder>-->
+        <tag>test</tag>
         <topic>logs</topic>
-        <!--<keyingStrategy class="com.github.danielwegener.logback.kafka.keying.NoKeyKeyingStrategy" />-->
-        <keyingStrategy class="logback.kafka.KafkaAggregateLogsKeyingStrategy" />
-        <deliveryStrategy class="com.github.danielwegener.logback.kafka.delivery.AsynchronousDeliveryStrategy" />
-
-        <!-- Optional parameter to use a fixed partition -->
-        <!-- <partition>0</partition> -->
-
-        <!-- Optional parameter to include log timestamps into the kafka message -->
-        <!-- <appendTimestamp>true</appendTimestamp> -->
-
-        <!-- each <producerConfig> translates to regular kafka-client config (format: key=value) -->
-        <!-- producer configs are documented here: https://kafka.apache.org/documentation.html#newproducerconfigs -->
-        <!-- bootstrap.servers is the only mandatory producerConfig -->
-<!--
-        <producerConfig>bootstrap.servers=${SPRING_CLOUD_KAFKA_HOST:-localhost}:9094</producerConfig>
--->
-        <producerConfig>bootstrap.servers=${SPRING_CLOUD_KAFKA_HOST:-localhost}:9092</producerConfig>
-        <!-- this is the fallback appender if kafka is not available. -->
-        <appender-ref ref="CONSOLE" />
+        <producerGroup>logs</producerGroup>
+        <nameServerAddress>localhost:9876</nameServerAddress>
+        <layout>
+            <pattern>%date %p %t - %m%n</pattern>
+        </layout>
     </appender>
 
     <root level="INFO">
         <appender-ref ref="CONSOLE" />
-        <appender-ref ref="kafkaAppender" />
+        <appender-ref ref="rocketMQAppender" />
     </root>
 </configuration>

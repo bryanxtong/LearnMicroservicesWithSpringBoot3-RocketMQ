@@ -1,6 +1,7 @@
 package microservices.book.multiplication.challenge;
 
 import microservices.book.event.challenge.ChallengeSolvedEvent;
+import org.apache.rocketmq.spring.core.RocketMQTemplate;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -10,7 +11,6 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import microservices.book.multiplication.user.User;
-import org.springframework.kafka.core.KafkaTemplate;
 
 import static org.assertj.core.api.BDDAssertions.*;
 import static org.mockito.Mockito.*;
@@ -21,11 +21,11 @@ class ChallengeEventPubTest {
     private ChallengeEventPub challengeEventPub;
 
     @Mock
-    private KafkaTemplate kafkaTemplate;
+    private RocketMQTemplate rocketMQTemplate;
 
     @BeforeEach
     public void setUp() {
-        challengeEventPub = new ChallengeEventPub(kafkaTemplate,
+        challengeEventPub = new ChallengeEventPub(rocketMQTemplate,
                 "test.topic");
     }
 

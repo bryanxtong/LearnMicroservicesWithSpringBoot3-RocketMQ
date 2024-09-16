@@ -1,4 +1,4 @@
-# Learn Microservices with Spring Boot 3 - Chapter 8 - 4/4（Replace RabbitMQ with Kafka）
+# Learn Microservices with Spring Boot 3 - Chapter 8 - 4/4（Replace RabbitMQ with RocketMQ）
 This repository contains the source code of the practical use case described in the book [Learn Microservices with Spring Boot 3 (3rd Edition)](https://link.springer.com/book/10.1007/978-1-4842-9757-5).
 The book follows a pragmatic approach to building a Microservice Architecture. You start with a small monolith and examine the pros and cons that come with a move to microservices.
 
@@ -16,7 +16,7 @@ The main concepts included in this last part of the chapter are:
 
 * Why do we need Centralized Logs and Distributed tracing?
 * Why would I create Docker images for my applications?
-* Building a simple logger application with Spring Boot and Kafka.
+* Building a simple logger application with Spring Boot and RocketMQ.
 * Distributed traces with Micrometer.
 * Building Docker images for Spring Boot applications with Cloud Native Buildpacks.
 * Container Platforms, Application Platforms, and Cloud Services.

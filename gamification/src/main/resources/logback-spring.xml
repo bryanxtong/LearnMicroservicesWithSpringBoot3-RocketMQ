@@ -17,7 +17,7 @@
         <tag>test</tag>
         <topic>logs</topic>
         <producerGroup>logs</producerGroup>
-        <nameServerAddress>localhost:9876</nameServerAddress>
+        <nameServerAddress>${SPRING_CLOUD_ROCKETMQ_HOST:-localhost}:9876</nameServerAddress>
         <layout>
             <pattern>%date %p %t - %m%n</pattern>
         </layout>

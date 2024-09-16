@@ -55,14 +55,6 @@ gateway$ docker build -t  gateway:0.0.1-SNAPSHOT .
 logs$ docker build -t  logs:0.0.1-SNAPSHOT .
 ```
 
-Then, build the consul importer from the `docker/consul` folder:
-
-```bash
-$ consul agent -node=learnmicro -dev
-docker/consul$ consul kv export config/ > consul-kv-docker.json
-docker/consul$ docker build -t consul-importer:1.0 .
-```
-
 And the UI server (first you have to build it with `npm run build`):
 
 ```bash

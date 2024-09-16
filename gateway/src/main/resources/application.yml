@@ -1,15 +1,18 @@
 server:
   port: 8000
+  #error:
+    #include-stacktrace: always
 
 spring:
   application:
     name: gateway
   cloud:
     loadbalancer:
-      ribbon:
-        # Not needed since we excluded the dependency
-        enabled: false
+      enabled: true
     gateway:
+      discovery:
+        locator:
+          enabled: true
       routes:
         - id: multiplication
           uri: lb://multiplication/
@@ -70,6 +73,7 @@ management:
   zipkin:
     tracing:
       endpoint: http://${SPRING_CLOUD_ZIPKIN_HOST:localhost}:9411/api/v2/spans
+
 ---
 spring:
   config:
@@ -82,7 +86,7 @@ spring:
           '[/**]':
             allowedOrigins:
               - "http://challenges-frontend:3000"
-              #- "http://localhost:3000"
+              - "http://localhost:3000"
             allowedHeaders:
               - "*"
             allowedMethods:

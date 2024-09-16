@@ -13,7 +13,7 @@ spring:
     nacos:
       config:
         group: DEFAULT_GROUP
-        prefix: config
+        prefix: application
         server-addr: ${SPRING_CLOUD_NACOS_HOST:localhost}:8848
         file-extension: yml
       discovery:

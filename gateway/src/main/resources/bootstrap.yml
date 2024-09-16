@@ -1,13 +1,18 @@
 spring:
   cloud:
-    consul:
-      config:
-        data-key: application.yml
-        format: yaml
-        default-context: defaults
-        prefixes:
-          - config
+    #consul:
+      #config:
+        #data-key: application.yml
+        #format: yaml
+        #default-context: defaults
+        #prefixes:
+          #- config
 #logging:
   #level:
     #org.springframework.amqp.rabbit.connection.CachingConnectionFactory: WARN
-
+    nacos:
+      config:
+        group: DEFAULT_GROUP
+        prefix: config
+        server-addr: ${SPRING_CLOUD_NACOS_HOST:localhost}:8848
+        file-extension: yml

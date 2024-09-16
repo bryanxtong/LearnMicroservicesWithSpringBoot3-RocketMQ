@@ -9,13 +9,8 @@ spring:
       ribbon:
         # Not needed since we excluded the dependency
         enabled: false
-    consul:
-      enabled: true
-      discovery:
-        # Get only services that are passing the health check
-        query-passing: true
-      host: ${SPRING_CLOUD_CONSUL_HOST:localhost}
-      port: 8500
+    nacos:
+      server-addr: ${SPRING_CLOUD_NACOS_HOST:localhost}:8848
     gateway:
       routes:
         - id: multiplication
@@ -49,8 +44,7 @@ spring:
         #wiretap: true
   reactor:
     context-propagation: auto
-  kafka:
-    bootstrap-servers: ${SPRING_CLOUD_KAFKA_HOST:localhost}:9094
+
 ##working with default logback configuration for distributed tracing
 logging:
   pattern:
@@ -78,7 +72,6 @@ management:
   zipkin:
     tracing:
       endpoint: http://${SPRING_CLOUD_ZIPKIN_HOST:localhost}:9411/api/v2/spans
-
 ---
 spring:
   config:
@@ -89,12 +82,12 @@ spring:
       globalcors:
         cors-configurations:
           '[/**]':
-            allowedOrigins: "http://challenges-frontend:3000"
+            allowedOrigins:
+              - "http://challenges-frontend:3000"
+              #- "http://localhost:3000"
             allowedHeaders:
               - "*"
             allowedMethods:
               - "GET"
               - "POST"
               - "OPTIONS"
-  kafka:
-    bootstrap-servers: ${SPRING_CLOUD_KAFKA_HOST}:9092

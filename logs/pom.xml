@@ -49,10 +49,28 @@
 		<dependency>
 			<groupId>com.alibaba.cloud</groupId>
 			<artifactId>spring-cloud-starter-alibaba-nacos-discovery</artifactId>
+			<exclusions>
+				<exclusion>
+					<groupId>com.alibaba.nacos</groupId>
+					<artifactId>nacos-client</artifactId>
+				</exclusion>
+			</exclusions>
 		</dependency>
 		<dependency>
 			<groupId>com.alibaba.cloud</groupId>
 			<artifactId>spring-cloud-starter-alibaba-nacos-config</artifactId>
+			<exclusions>
+				<exclusion>
+					<groupId>com.alibaba.nacos</groupId>
+					<artifactId>nacos-client</artifactId>
+				</exclusion>
+			</exclusions>
+		</dependency>
+		<!--should be the same version as nacos server, otherwise grpc connect error occurs-->
+		<dependency>
+			<groupId>com.alibaba.nacos</groupId>
+			<artifactId>nacos-client</artifactId>
+			<version>2.4.2</version>
 		</dependency>
 		<dependency>
 			<groupId>org.projectlombok</groupId>

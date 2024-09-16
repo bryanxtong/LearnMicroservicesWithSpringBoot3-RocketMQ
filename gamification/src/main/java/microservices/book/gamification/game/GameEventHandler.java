@@ -12,7 +12,7 @@ import lombok.extern.slf4j.Slf4j;
 @RequiredArgsConstructor
 @Slf4j
 @Service
-@RocketMQMessageListener(nameServer ="localhost:9876",consumerGroup = "gamification", topic = "${rocketmq.attempts}", selectorType = SelectorType.TAG )
+@RocketMQMessageListener(nameServer ="namesrv:9876",consumerGroup = "gamification", topic = "${rocketmq.attempts}", selectorType = SelectorType.TAG )
 public class GameEventHandler implements RocketMQListener<ChallengeSolvedEvent> {
 
     private final GameService gameService;

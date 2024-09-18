@@ -20,10 +20,7 @@ public class ChallengeEventPub {
 
     public void challengeSolved(final ChallengeAttempt challengeAttempt) {
         ChallengeSolvedEvent event = buildEvent(challengeAttempt);
-/*
-        ProducerRecord<String, ChallengeSolvedEvent> producerRecord = new ProducerRecord<>(topic,String.valueOf(event.getUserId()), event);
-*/
-        rocketMQTemplate.syncSend(topic, event, event.getUserId());
+        rocketMQTemplate.syncSendOrderly(topic, event, String.valueOf(event.getUserId()));
     }
 
     private ChallengeSolvedEvent buildEvent(final ChallengeAttempt attempt) {

@@ -16,11 +16,11 @@ public class LogsConsumer implements RocketMQListener<Message> {
         String level = message.getProperty("level");
         String appId = message.getProperty("applicationId");
         String msg = new String(message.getBody());
-        /*if(appId ==null) {
+        if(appId == null) {
             Marker marker = MarkerFactory.getMarker("UNKNOWN");
-            log.error(marker, msg);
+            log.warn(marker, msg);
             return;
-        }*/
+        }
         Marker marker = MarkerFactory.getMarker(appId);
         switch (level) {
             case "INFO" -> log.info(marker, msg);

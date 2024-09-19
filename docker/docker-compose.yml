@@ -14,7 +14,7 @@ services:
     environment:
       - SPRING_PROFILES_ACTIVE=docker
       - SPRING_CLOUD_NACOS_HOST=nacos
-      - SPRING_CLOUD_ROCKETMQ_HOST=namesrv
+      - SPRING_CLOUD_ROCKETMQ_PROXY_HOST=proxy
       - SPRING_CLOUD_ZIPKIN_HOST=zipkin
     depends_on:
       - namesrv
@@ -26,7 +26,7 @@ services:
     environment:
       - SPRING_PROFILES_ACTIVE=docker
       - SPRING_CLOUD_NACOS_HOST=nacos
-      - SPRING_CLOUD_ROCKETMQ_HOST=namesrv
+      - SPRING_CLOUD_ROCKETMQ_PROXY_HOST=proxy
       - SPRING_CLOUD_ZIPKIN_HOST=zipkin
     depends_on:
       - namesrv
@@ -41,7 +41,7 @@ services:
     environment:
       - SPRING_PROFILES_ACTIVE=docker
       - SPRING_CLOUD_NACOS_HOST=nacos
-      - SPRING_CLOUD_ROCKETMQ_HOST=namesrv
+      - SPRING_CLOUD_ROCKETMQ_PROXY_HOST=proxy
       - SPRING_CLOUD_ZIPKIN_HOST=zipkin
     depends_on:
       - namesrv
@@ -53,7 +53,7 @@ services:
     environment:
       - SPRING_PROFILES_ACTIVE=docker
       - SPRING_CLOUD_NACOS_HOST=nacos
-      - SPRING_CLOUD_ROCKETMQ_HOST=namesrv
+      - SPRING_CLOUD_ROCKETMQ_PROXY_HOST=proxy
       - SPRING_CLOUD_ZIPKIN_HOST=zipkin
     depends_on:
       - namesrv
@@ -101,7 +101,6 @@ services:
     command: sh mqproxy
   nacos:
     image: nacos/nacos-server:v2.3.2
-    #container_name: nacos-standalone-mysql
     env_file:
       - ./env/nacos-standlone-mysql.env
     volumes:

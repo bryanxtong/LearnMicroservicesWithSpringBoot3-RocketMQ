@@ -22,14 +22,17 @@ import ch.qos.logback.core.AppenderBase;
 import ch.qos.logback.core.Layout;
 import ch.qos.logback.core.spi.PreSerializationTransformer;
 import ch.qos.logback.core.status.ErrorStatus;
-import org.apache.rocketmq.common.message.Message;
+import org.apache.rocketmq.client.apis.ClientServiceProvider;
+import org.apache.rocketmq.client.apis.message.Message;
+import org.apache.rocketmq.client.apis.message.MessageBuilder;
+import org.apache.rocketmq.client.apis.producer.Producer;
 import org.apache.rocketmq.logappender.common.ProducerInstance;
-import org.apache.rocketmq.client.producer.MQProducer;
 
 import java.net.Inet4Address;
 import java.net.UnknownHostException;
 import java.nio.ByteBuffer;
 import java.util.Map;
+import java.util.Set;
 
 /**
  * Logback Appender Component
@@ -42,24 +45,21 @@ public class RocketmqLogbackAppender extends AppenderBase<ILoggingEvent> {
     private String tag;
 
     /**
-     * Whitch topic to send log messages
+     * Which topic to send log messages
      */
     private String topic;
 
-    /**
-     * RocketMQ nameserver address
-     */
-    private String nameServerAddress;
+    private String[] keys;
 
     /**
-     * Log producer group
+     * RocketMQ proxy endpoint
      */
-    private String producerGroup;
+    private String endpoint;
 
     /**
      * Log producer send instance
      */
-    private MQProducer producer;
+    private Producer producer;
 
     private Layout layout;
 
@@ -78,7 +78,7 @@ public class RocketmqLogbackAppender extends AppenderBase<ILoggingEvent> {
         //customize the code start
         String keyHash = null;
         try {
-            String hostName ="";
+            String hostName = "";
             try {
                 hostName = Inet4Address.getLocalHost().getHostName();
             } catch (UnknownHostException e) {
@@ -88,23 +88,45 @@ public class RocketmqLogbackAppender extends AppenderBase<ILoggingEvent> {
             final String applicationId = context.getProperty("applicationId");
 
             if (hostName == null || hostPort == null || applicationId == null) {
-                    addError("Hostname/hostport/applicationId could not be found in context.");
+                addError("Hostname/hostport/applicationId could not be found in context.");
             } else {
                 String keys = hostName + "-" + hostPort + "-" + applicationId;
                 keyHash = ByteBuffer.allocate(4).putInt(keys.hashCode()).toString();
             }
 
-            Message msg = new Message(topic, tag, keyHash,logStr.getBytes());
-            msg.getProperties().put(ProducerInstance.APPENDER_TYPE, ProducerInstance.LOGBACK_APPENDER);
-            msg.getProperties().put("level", event.getLevel().toString());
-            Map<String, String> copyOfPropertyMap = this.getContext().getCopyOfPropertyMap();
-            if(copyOfPropertyMap !=null){
-                msg.getProperties().putAll(copyOfPropertyMap);
+            ClientServiceProvider provider = ClientServiceProvider.loadService();
+            MessageBuilder messageBuilder = provider.newMessageBuilder()
+                    .setTopic(topic)
+                    .setBody(logStr.getBytes());
+            /**
+             * Not required fields
+             */
+            if (keyHash != null) {
+                messageBuilder.setMessageGroup(keyHash);
             }
+            if (keys != null && keys.length != 0) {
+                messageBuilder.setKeys(keys);
+            }
+
+            if (tag != null && tag.length() != 0) {
+                messageBuilder.setTag(tag);
+            }
+            //currently there is no easy to add more properties as they return new HashMap<>(properties) in MessageImpl.getProperties()
+            messageBuilder.addProperty(ProducerInstance.APPENDER_TYPE, ProducerInstance.LOGBACK_APPENDER);
+            messageBuilder.addProperty("level", event.getLevel().toString());
+
+            Map<String, String> copyOfPropertyMap = this.getContext().getCopyOfPropertyMap();
+            if (copyOfPropertyMap != null) {
+                Set<Map.Entry<String, String>> entries = copyOfPropertyMap.entrySet();
+                for (Map.Entry<String, String> entry : entries) {
+                    messageBuilder.addProperty(entry.getKey(), entry.getValue());
+                }
+            }
+            Message msg = messageBuilder.build();
             //customize the code end
 
             //Send message and do not wait for the ack from the message broker.
-            producer.sendOneway(msg);
+            producer.send(msg);
         } catch (Exception e) {
             addError("Could not send message in RocketmqLogbackAppender [" + name + "]. Message is : " + logStr, e);
         }
@@ -125,10 +147,10 @@ public class RocketmqLogbackAppender extends AppenderBase<ILoggingEvent> {
             return;
         }
         try {
-            producer = ProducerInstance.getProducerInstance().getInstance(nameServerAddress, producerGroup);
+            producer = ProducerInstance.getProducerInstance().getProducer(endpoint);
         } catch (Exception e) {
             addError("Starting RocketmqLogbackAppender [" + this.getName()
-                    + "] nameServerAddress:" + nameServerAddress + " group:" + producerGroup + " " + e.getMessage());
+                    + "] endpoint:" + endpoint + " " + e.getMessage());
         }
         if (producer != null) {
             super.start();
@@ -147,10 +169,10 @@ public class RocketmqLogbackAppender extends AppenderBase<ILoggingEvent> {
         this.started = false;
 
         try {
-            ProducerInstance.getProducerInstance().removeAndClose(this.nameServerAddress, this.producerGroup);
+            ProducerInstance.getProducerInstance().close();
         } catch (Exception e) {
             addError("Closeing RocketmqLogbackAppender [" + this.getName()
-                    + "] nameServerAddress:" + nameServerAddress + " group:" + producerGroup + " " + e.getMessage());
+                    + "] endpoint:" + endpoint + " " + e.getMessage());
         }
 
         // Help garbage collection
@@ -199,11 +221,7 @@ public class RocketmqLogbackAppender extends AppenderBase<ILoggingEvent> {
         this.topic = topic;
     }
 
-    public void setNameServerAddress(String nameServerAddress) {
-        this.nameServerAddress = nameServerAddress;
-    }
-
-    public void setProducerGroup(String producerGroup) {
-        this.producerGroup = producerGroup;
+    public void setEndpoint(String endpoint) {
+        this.endpoint = endpoint;
     }
 }

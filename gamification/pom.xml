@@ -62,24 +62,12 @@
             <groupId>com.alibaba.cloud</groupId>
             <artifactId>spring-cloud-starter-alibaba-nacos-config</artifactId>
         </dependency>
-        <!--rocketmq-spring-boot-starter 2.3.1 needs rocket-client 5.3.0-->
+        <!--use rocketmq-client-java to connect to proxy-->
         <dependency>
             <groupId>org.apache.rocketmq</groupId>
-            <artifactId>rocketmq-spring-boot-starter</artifactId>
-            <version>2.3.0</version>
+            <artifactId>rocketmq-v5-client-spring-boot-starter</artifactId>
+            <version>2.3.1</version>
         </dependency>
-        <dependency>
-            <groupId>org.apache.rocketmq</groupId>
-            <artifactId>rocketmq-logappender</artifactId>
-            <version>4.9.2</version>
-            <exclusions>
-                <exclusion>
-                    <groupId>org.apache.rocketmq</groupId>
-                    <artifactId>rocketmq-client</artifactId>
-                </exclusion>
-            </exclusions>
-        </dependency>
-
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-actuator</artifactId>

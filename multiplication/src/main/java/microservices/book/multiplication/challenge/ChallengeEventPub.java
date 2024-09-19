@@ -1,26 +1,26 @@
 package microservices.book.multiplication.challenge;
 
 import microservices.book.event.challenge.ChallengeSolvedEvent;
-import org.apache.rocketmq.spring.core.RocketMQTemplate;
+import org.apache.rocketmq.client.core.RocketMQClientTemplate;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 @Service
 public class ChallengeEventPub {
 
-    private final RocketMQTemplate rocketMQTemplate;
+    private final RocketMQClientTemplate rocketMQClientTemplate;
     private final String topic;
 
-    public ChallengeEventPub(final  RocketMQTemplate rocketMQTemplate,
+    public ChallengeEventPub(final  RocketMQClientTemplate rocketMQClientTemplate,
                              @Value("${rocketmq.attempts}")
                              final String topic) {
-        this.rocketMQTemplate = rocketMQTemplate;
+        this.rocketMQClientTemplate = rocketMQClientTemplate;
         this.topic = topic;
     }
 
     public void challengeSolved(final ChallengeAttempt challengeAttempt) {
         ChallengeSolvedEvent event = buildEvent(challengeAttempt);
-        rocketMQTemplate.syncSendOrderly(topic, event, String.valueOf(event.getUserId()));
+        rocketMQClientTemplate.syncSendFifoMessage(topic, event, String.valueOf(event.getUserId()));
     }
 
     private ChallengeSolvedEvent buildEvent(final ChallengeAttempt attempt) {

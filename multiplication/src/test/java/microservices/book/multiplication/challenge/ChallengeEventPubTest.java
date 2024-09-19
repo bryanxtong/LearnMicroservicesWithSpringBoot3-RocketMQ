@@ -1,7 +1,8 @@
 package microservices.book.multiplication.challenge;
 
 import microservices.book.event.challenge.ChallengeSolvedEvent;
-import org.apache.rocketmq.spring.core.RocketMQTemplate;
+import org.apache.rocketmq.client.core.RocketMQClientTemplate;
+import org.assertj.core.api.Condition;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -21,12 +22,12 @@ class ChallengeEventPubTest {
     private ChallengeEventPub challengeEventPub;
 
     @Mock
-    private RocketMQTemplate rocketMQTemplate;
+    private RocketMQClientTemplate rocketMQClientTemplate;
 
     @BeforeEach
     public void setUp() {
-        challengeEventPub = new ChallengeEventPub(rocketMQTemplate,
-                "test.topic");
+        challengeEventPub = new ChallengeEventPub(rocketMQClientTemplate,
+                "test-topic");
     }
 
     @ParameterizedTest
@@ -39,16 +40,14 @@ class ChallengeEventPubTest {
         challengeEventPub.challengeSolved(attempt);
 
         // then
-        var exchangeCaptor = ArgumentCaptor.forClass(String.class);
-        var routingKeyCaptor = ArgumentCaptor.forClass(String.class);
+        var topicCaptor = ArgumentCaptor.forClass(String.class);
         var eventCaptor = ArgumentCaptor.forClass(ChallengeSolvedEvent.class);
-/*
-        verify(kafkaTemplate).convertAndSend(exchangeCaptor.capture(),
-                routingKeyCaptor.capture(), eventCaptor.capture());
-        then(exchangeCaptor.getValue()).isEqualTo("test.topic");
-        then(routingKeyCaptor.getValue()).isEqualTo("attempt." +
-                (correct ? "correct" : "wrong"));
-        then(eventCaptor.getValue()).isEqualTo(solvedEvent(correct));*/
+        var keyCaptor = ArgumentCaptor.forClass(String.class);
+
+
+        verify(rocketMQClientTemplate).syncSendFifoMessage(topicCaptor.capture(), eventCaptor.capture(), keyCaptor.capture());
+        then(topicCaptor.getValue()).isEqualTo("test-topic");
+        then(eventCaptor.getValue()).isEqualTo(solvedEvent(correct));
     }
 
     private ChallengeAttempt createTestAttempt(boolean correct) {

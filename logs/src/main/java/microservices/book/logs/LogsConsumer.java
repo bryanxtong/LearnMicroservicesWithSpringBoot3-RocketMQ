@@ -23,7 +23,6 @@ public class LogsConsumer implements RocketMQListener {
         String appId = properties.get("applicationId");
         try{
             String msg = StandardCharsets.UTF_8.decode(messageView.getBody()).toString();
-            System.out.println(msg + "==>"+properties);
             if(appId == null) {
                 Marker marker = MarkerFactory.getMarker("UNKNOWN");
                 log.warn(marker, msg);

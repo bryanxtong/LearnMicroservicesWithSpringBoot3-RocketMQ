@@ -63,6 +63,9 @@ challenges-frontend$ npm run build
 challenges-frontend$ docker build -t challenges-frontend:1.0 .
 ```
 
+change brokerIP1 to your docker hosts IP in docker\config\rocketmq\broker.cnf
+brokerIP1=<192.168.71.47>
+
 Once you have all the images ready, run:
 
 ```bash

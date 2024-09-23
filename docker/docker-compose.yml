@@ -15,10 +15,19 @@ services:
       - SPRING_PROFILES_ACTIVE=docker
       - SPRING_CLOUD_NACOS_HOST=nacos
       - SPRING_CLOUD_ROCKETMQ_PROXY_HOST=proxy
-      - SPRING_CLOUD_ZIPKIN_HOST=zipkin
+      - OTEL_SERVICE_NAME=multiplication
+      - OTEL_EXPORTER_OTLP_ENDPOINT=http://collector:4318
+      # Logs are disabled by default
+      - OTEL_LOGS_EXPORTER=otlp
+      - OTEL_TRACES_EXPORTER=otlp
+      - OTEL_METRICS_EXPORTER=otlp
+      # Optional specify file configuration instead of using environment variable scheme
+      # To use, call "export OTEL_CONFIG_FILE=/sdk-config.yaml" before calling docker compose up
+      - OTEL_CONFIG_FILE=
     depends_on:
       - namesrv
       - nacos
+      - collector
     networks:
       - microservices
   gamification:
@@ -27,10 +36,19 @@ services:
       - SPRING_PROFILES_ACTIVE=docker
       - SPRING_CLOUD_NACOS_HOST=nacos
       - SPRING_CLOUD_ROCKETMQ_PROXY_HOST=proxy
-      - SPRING_CLOUD_ZIPKIN_HOST=zipkin
+      - OTEL_SERVICE_NAME=gamification
+      - OTEL_EXPORTER_OTLP_ENDPOINT=http://collector:4318
+      # Logs are disabled by default
+      - OTEL_LOGS_EXPORTER=otlp
+      - OTEL_TRACES_EXPORTER=otlp
+      - OTEL_METRICS_EXPORTER=otlp
+      # Optional specify file configuration instead of using environment variable scheme
+      # To use, call "export OTEL_CONFIG_FILE=/sdk-config.yaml" before calling docker compose up
+      - OTEL_CONFIG_FILE=
     depends_on:
       - namesrv
       - nacos
+      - collector
     networks:
       - microservices
   gateway:
@@ -42,10 +60,19 @@ services:
       - SPRING_PROFILES_ACTIVE=docker
       - SPRING_CLOUD_NACOS_HOST=nacos
       - SPRING_CLOUD_ROCKETMQ_PROXY_HOST=proxy
-      - SPRING_CLOUD_ZIPKIN_HOST=zipkin
+      - OTEL_SERVICE_NAME=gateway
+      - OTEL_EXPORTER_OTLP_ENDPOINT=http://collector:4318
+      # Logs are disabled by default
+      - OTEL_LOGS_EXPORTER=otlp
+      - OTEL_TRACES_EXPORTER=otlp
+      - OTEL_METRICS_EXPORTER=otlp
+      # Optional specify file configuration instead of using environment variable scheme
+      # To use, call "export OTEL_CONFIG_FILE=/sdk-config.yaml" before calling docker compose up
+      - OTEL_CONFIG_FILE=
     depends_on:
       - namesrv
       - nacos
+      - collector
     networks:
       - microservices
   logs:
@@ -54,10 +81,19 @@ services:
       - SPRING_PROFILES_ACTIVE=docker
       - SPRING_CLOUD_NACOS_HOST=nacos
       - SPRING_CLOUD_ROCKETMQ_PROXY_HOST=proxy
-      - SPRING_CLOUD_ZIPKIN_HOST=zipkin
+      - OTEL_SERVICE_NAME=logs
+      - OTEL_EXPORTER_OTLP_ENDPOINT=http://collector:4318
+      # Logs are disabled by default
+      - OTEL_LOGS_EXPORTER=otlp
+      - OTEL_TRACES_EXPORTER=otlp
+      - OTEL_METRICS_EXPORTER=otlp
+      # Optional specify file configuration instead of using environment variable scheme
+      # To use, call "export OTEL_CONFIG_FILE=/sdk-config.yaml" before calling docker compose up
+      - OTEL_CONFIG_FILE=
     depends_on:
       - namesrv
       - nacos
+      - collector
     networks:
       - microservices
   namesrv:
@@ -143,6 +179,18 @@ services:
       interval: 10s
       timeout: 10s
       retries: 3
+    networks:
+      - microservices
+  collector:
+    image: otel/opentelemetry-collector-contrib:0.109.0
+    volumes:
+      - ./collector-config.yaml:/collector-config.yaml
+    command: ["--config=/collector-config.yaml"]
+    expose:
+      - "4318"
+    ports:
+      - "4318:4318"
+      - "4317:4317"
     networks:
       - microservices
 networks:

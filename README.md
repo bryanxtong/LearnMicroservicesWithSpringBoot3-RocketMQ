@@ -40,15 +40,6 @@ In case you want to learn how to build the images, keep reading the instructions
 First, build the application images with:
 
 ```bash
-multiplication$ ./mvnw spring-boot:build-image
-gamification$ ./mvnw spring-boot:build-image
-gateway$ ./mvnw spring-boot:build-image
-logs$ ./mvnw spring-boot:build-image
-```
-
-or
-
-```bash
 multiplication$ docker build -t  multiplication:0.0.1-SNAPSHOT .
 gamification$ docker build -t  gamification:0.0.1-SNAPSHOT .
 gateway$ docker build -t  gateway:0.0.1-SNAPSHOT .

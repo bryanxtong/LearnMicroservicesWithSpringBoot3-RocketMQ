@@ -6,19 +6,56 @@ receivers:
       grpc:
         endpoint: "0.0.0.0:4317"
 exporters:
-  logging:
-    verbosity: detailed
+  debug:
+
+  #logging:
+    #verbosity: detailed
   zipkin:
     endpoint: http://zipkin:9411/api/v2/spans
+    format: proto
+
+  prometheus:
+    endpoint: "0.0.0.0:8889"
+    #tls:
+      #insecure: true 
+      #ca_file: "/path/to/ca.pem"
+      #cert_file: "/path/to/cert.pem"
+      #key_file: "/path/to/key.pem"
+    namespace: test-space
+    #const_labels:
+      #label1: value1
+      #"another label": spaced value
+    send_timestamps: true
+    metric_expiration: 180m
+    enable_open_metrics: true
+    add_metric_suffixes: false
+    resource_to_telemetry_conversion:
+      enabled: true
+
+  otlp:
+    endpoint: jaeger-all-in-one:4317
+    tls:
+      insecure: true
+processors:
+  batch:
+  
+extensions:
+  health_check:
+  pprof:
+    endpoint: :1888
+  zpages:
+    endpoint: :55679
 service:
+  extensions: [pprof, zpages, health_check]
   pipelines:
     metrics:
       receivers: [otlp]
-      exporters: [logging]
+      processors: [batch]
+      exporters: [debug,prometheus]
     traces:
       receivers: [otlp]
-      processors: []
-      exporters: [logging,zipkin]
+      processors: [batch]
+      exporters: [debug,zipkin,otlp]
     logs:
       receivers: [otlp]
-      exporters: [logging]
+      exporters: [debug]

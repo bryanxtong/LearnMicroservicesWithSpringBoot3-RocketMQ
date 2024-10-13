@@ -17,7 +17,7 @@ The main concepts included in this last part of the chapter are:
 * Why do we need Centralized Logs and Distributed tracing?
 * Why would I create Docker images for my applications?
 * Building a simple logger application with Spring Boot and RocketMQ.
-* Distributed traces with Micrometer.
+* Distributed traces with OpenTelemetry.
 * Building Docker images for Spring Boot applications with Cloud Native Buildpacks.
 * Container Platforms, Application Platforms, and Cloud Services.
 
@@ -77,6 +77,10 @@ change kibana_system password to changeme
 docker exec -it <elasticsearch> bash
 /usr/share/elasticsearch/bin/elasticsearch-reset-password -i -u kibana_system
 ```
+
+and It now uses opentelemetry collector contrib to collect metrics to prometheus 
+and traces to zipkin/jaeger/elasticsearch and logs to loki/elasticsearch, 
+and grafana can be used to view loki logs, elasticsearch logs/traces, and prometheus metrics
 
 See the figure below for a diagram showing the container view.
 

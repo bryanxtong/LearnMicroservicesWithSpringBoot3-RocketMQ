@@ -10,10 +10,13 @@ exporters:
 
   #logging:
     #verbosity: detailed
+    
+  #traces
   zipkin:
     endpoint: http://zipkin:9411/api/v2/spans
     format: proto
 
+  #metrics
   prometheus:
     endpoint: "0.0.0.0:8889"
     #tls:
@@ -32,10 +35,23 @@ exporters:
     resource_to_telemetry_conversion:
       enabled: true
 
+  #traces
   otlp:
     endpoint: jaeger-all-in-one:4317
     tls:
       insecure: true
+  #logs  
+  otlphttp/loki:
+    auth:
+      authenticator: basicauth/loki
+    endpoint: http://loki:3100/otlp
+    
+  #currently traces and logs  
+  elasticsearch:
+    endpoint: http://elasticsearch:9200
+    auth:
+      authenticator: basicauth
+ 
 processors:
   batch:
   
@@ -45,8 +61,16 @@ extensions:
     endpoint: :1888
   zpages:
     endpoint: :55679
+  basicauth/loki:
+    client_auth:
+      username: loki
+      password: loki
+  basicauth:
+    client_auth:
+      username: elastic
+      password: changeme
 service:
-  extensions: [pprof, zpages, health_check]
+  extensions: [pprof, zpages, health_check, basicauth/loki,basicauth]
   pipelines:
     metrics:
       receivers: [otlp]
@@ -55,7 +79,7 @@ service:
     traces:
       receivers: [otlp]
       processors: [batch]
-      exporters: [debug,zipkin,otlp]
+      exporters: [debug,zipkin,otlp,elasticsearch]
     logs:
       receivers: [otlp]
-      exporters: [debug]
+      exporters: [debug, otlphttp/loki,elasticsearch]

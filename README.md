@@ -58,6 +58,12 @@ change brokerIP1 to your docker hosts IP in docker\config\rocketmq\broker.cnf
 
 brokerIP1=<192.168.71.47>
 
+Once you have all the images ready, run:
+
+```bash
+docker$ docker-compose up
+```
+
 Go into the docker container and execute the following commands 
 
 ```bash
@@ -66,10 +72,10 @@ bin/mqadmin updateTopic -n localhost:9876 -c DefaultCluster -t attempts-topic -a
 bin/mqadmin updateTopic -n localhost:9876 -c DefaultCluster -t logs           -a +message.type=FIFO
 ```
 
-Once you have all the images ready, run:
-
+change kibana_system password to changeme
 ```bash
-docker$ docker-compose up
+docker exec -it <elasticsearch> bash
+/usr/share/elasticsearch/bin/elasticsearch-reset-password -i -u kibana_system
 ```
 
 See the figure below for a diagram showing the container view.

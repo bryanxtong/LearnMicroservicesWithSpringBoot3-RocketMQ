@@ -169,6 +169,7 @@ services:
       retries: 10
     networks:
       - microservices
+  #for traces
   zipkin:
     image: 'openzipkin/zipkin'
     container_name: zipkin
@@ -199,7 +200,7 @@ services:
     networks:
       - microservices
   
-  # Jaeger
+  # Jaeger for traces
   jaeger-all-in-one:
     image: jaegertracing/all-in-one:latest
     restart: always
@@ -209,7 +210,53 @@ services:
       - "14250"
     networks:
       - microservices
-  # Grafana
+  #currently for traces and logs    
+  elasticsearch:
+    image: elasticsearch:8.15.2
+    container_name: elasticsearch
+    environment:
+      discovery.type: single-node
+      ES_JAVA_OPTS: "-Xms512m -Xmx512m"
+      ELASTIC_PASSWORD: changeme
+      #xpack.security.enabled: true
+      xpack.security.http.ssl.enabled: false
+    ports:
+      - "9200:9200"
+      - "9300:9300"
+    healthcheck:
+      test: ["CMD-SHELL", "curl --silent --fail --user elastic:changeme localhost:9200/_cluster/health || exit 1"]
+      interval: 10s
+      timeout: 10s
+      retries: 3
+    networks:
+      - microservices
+  kibana:
+    depends_on:
+      elasticsearch:
+          condition: service_healthy
+    image: docker.elastic.co/kibana/kibana:8.15.2
+    #volumes:
+      #- kibanadata:/usr/share/kibana/data
+    ports:
+      - 5601:5601
+    environment:
+      - SERVERNAME=kibana
+      - ELASTICSEARCH_HOSTS=http://elasticsearch:9200
+      - ELASTICSEARCH_USERNAME=kibana_system
+      - ELASTICSEARCH_PASSWORD=changeme
+    mem_limit: 1073741824
+    healthcheck:
+      test:
+        [
+          "CMD-SHELL",
+          "curl -s -I http://localhost:5601 | grep -q 'HTTP/1.1 302 Found'",
+        ]
+      interval: 10s
+      timeout: 10s
+      retries: 120
+    networks:
+      - microservices
+  # Grafana 
   grafana:
     image: grafana/grafana:10.4.3
     container_name: grafana
@@ -220,6 +267,28 @@ services:
     restart: unless-stopped
     environment:
       - "GF_INSTALL_PLUGINS=grafana-opensearch-datasource"
+      - GF_PATHS_PROVISIONING=/etc/grafana/provisioning
+      - GF_AUTH_ANONYMOUS_ENABLED=true
+      - GF_AUTH_ANONYMOUS_ORG_ROLE=Admin
+    entrypoint:
+      - sh
+      - -euc
+      - |
+        mkdir -p /etc/grafana/provisioning/datasources
+        cat <<EOF > /etc/grafana/provisioning/datasources/ds.yaml
+        apiVersion: 1
+        datasources:
+        - name: Loki
+          type: loki
+          access: proxy 
+          orgId: 1
+          url: http://loki:3100
+          basicAuth: false
+          #isDefault: true
+          version: 1
+          editable: false
+        EOF
+        /run.sh
     volumes:
       - ./config/grafana/grafana.ini:/etc/grafana/grafana.ini
       - ./config/grafana/provisioning/:/etc/grafana/provisioning/
@@ -229,6 +298,15 @@ services:
       - prometheus
     networks:
       - microservices
+  #loki
+  loki:
+    image: grafana/loki:3.1.0
+    ports:
+      - "3100:3100"
+    command: -config.file=/etc/loki/local-config.yaml
+    networks:
+      - microservices
+      
   # Prometheus
   prometheus:
     image: quay.io/prometheus/prometheus:v2.52.0

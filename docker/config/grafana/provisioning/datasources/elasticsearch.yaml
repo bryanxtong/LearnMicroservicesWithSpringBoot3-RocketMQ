@@ -1,0 +1,15 @@
+apiVersion: 1
+
+datasources:
+  - name: Elastic
+    type: elasticsearch
+    access: proxy
+    url: http://elasticsearch:9200
+    basicAuth: true
+    basicAuthUser: elastic
+    jsonData:
+      #index: '[metrics-]YYYY.MM.DD'
+      #interval: Daily
+      timeField: '@timestamp'
+    secureJsonData:
+      basicAuthPassword: changeme

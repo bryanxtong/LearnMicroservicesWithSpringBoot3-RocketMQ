@@ -5,6 +5,7 @@ datasources:
     type: elasticsearch
     access: proxy
     url: http://elasticsearch:9200
+    editable: true
     basicAuth: true
     basicAuthUser: elastic
     jsonData:

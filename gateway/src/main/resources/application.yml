@@ -1,8 +1,5 @@
 server:
   port: 8000
-  #error:
-    #include-stacktrace: always
-
 spring:
   application:
     name: gateway

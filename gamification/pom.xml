@@ -15,6 +15,7 @@
     <description>Gamification Microservice - Learn Microservices with Spring Boot - Book - Chapter 8</description>
     <properties>
         <java.version>17</java.version>
+        <spring-cloud-alibaba.version>2023.0.3.3</spring-cloud-alibaba.version>
     </properties>
     <dependencies>
         <dependency>
@@ -100,7 +101,7 @@
             <dependency>
                 <groupId>com.alibaba.cloud</groupId>
                 <artifactId>spring-cloud-alibaba-dependencies</artifactId>
-                <version>2023.0.1.2</version>
+                <version>${spring-cloud-alibaba.version}</version>
                 <type>pom</type>
                 <scope>import</scope>
             </dependency>

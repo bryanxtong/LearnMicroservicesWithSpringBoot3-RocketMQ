@@ -97,7 +97,7 @@ services:
     networks:
       - microservices
   namesrv:
-    image: apache/rocketmq:5.3.0
+    image: apache/rocketmq:5.3.1
     container_name: rmqnamesrv
     ports:
       - 9876:9876
@@ -105,7 +105,7 @@ services:
       - microservices
     command: sh mqnamesrv
   broker:
-    image: apache/rocketmq:5.3.0
+    image: apache/rocketmq:5.3.1
     container_name: rmqbroker
     ports:
       - 10909:10909
@@ -121,7 +121,7 @@ services:
       - ./config/rocketmq/broker.conf:/home/rocketmq/rocketmq-5.3.0/conf/broker.conf
     command: sh mqbroker -n namesrv:9876 -c ../conf/broker.conf  
   proxy:
-    image: apache/rocketmq:5.3.0
+    image: apache/rocketmq:5.3.1
     container_name: rmqproxy
     networks:
       - microservices
@@ -136,7 +136,7 @@ services:
       - NAMESRV_ADDR=rmqnamesrv:9876
     command: sh mqproxy
   nacos:
-    image: nacos/nacos-server:v2.3.2
+    image: nacos/nacos-server:v2.4.2
     env_file:
       - ./env/nacos-standlone-mysql.env
     volumes:

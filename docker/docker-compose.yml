@@ -97,7 +97,7 @@ services:
     networks:
       - microservices
   namesrv:
-    image: apache/rocketmq:5.3.1
+    image: apache/rocketmq:5.3.3
     container_name: rmqnamesrv
     ports:
       - 9876:9876
@@ -105,7 +105,7 @@ services:
       - microservices
     command: sh mqnamesrv
   broker:
-    image: apache/rocketmq:5.3.1
+    image: apache/rocketmq:5.3.3
     container_name: rmqbroker
     ports:
       - 10909:10909
@@ -118,10 +118,10 @@ services:
     networks:
       - microservices
     volumes:
-      - ./config/rocketmq/broker.conf:/home/rocketmq/rocketmq-5.3.0/conf/broker.conf
-    command: sh mqbroker -n namesrv:9876 -c ../conf/broker.conf  
+      - ./config/rocketmq/broker.conf:/home/rocketmq/rocketmq-5.3.3/conf/broker.conf
+    command: sh mqbroker -n namesrv:9876 -c ../conf/broker.conf
   proxy:
-    image: apache/rocketmq:5.3.1
+    image: apache/rocketmq:5.3.3
     container_name: rmqproxy
     networks:
       - microservices
@@ -136,12 +136,14 @@ services:
       - NAMESRV_ADDR=rmqnamesrv:9876
     command: sh mqproxy
   nacos:
-    image: nacos/nacos-server:v2.4.2
+    image: nacos/nacos-server:v3.0.1
     env_file:
       - ./env/nacos-standlone-mysql.env
     volumes:
       - ./standalone-logs/:/home/nacos/logs
     ports:
+      #web console port
+      - "8082:8080"
       - "8848:8848"
       - "9848:9848"
     depends_on:
@@ -187,10 +189,10 @@ services:
     volumes:
       - ./collector-config.yaml:/collector-config.yaml
     command: ["--config=/collector-config.yaml"]
-    #expose:
-      #- "4318"
+      #expose:
+    #- "4318"
     ports:
-      - "4318:4318"   
+      - "4318:4318"
       - "1888:1888"   # pprof extension
       - "8888:8888"   # Prometheus metrics exposed by the collector
       - "8889:8889"   # Prometheus exporter metrics
@@ -199,7 +201,7 @@ services:
       - "55679:55679" # zpages extension
     networks:
       - microservices
-  
+
   # Jaeger for traces
   jaeger-all-in-one:
     image: jaegertracing/all-in-one:latest
@@ -210,7 +212,7 @@ services:
       - "14250"
     networks:
       - microservices
-  #currently for traces and logs    
+  #currently for traces and logs
   elasticsearch:
     image: elasticsearch:8.15.2
     container_name: elasticsearch
@@ -233,10 +235,10 @@ services:
   kibana:
     depends_on:
       elasticsearch:
-          condition: service_healthy
+        condition: service_healthy
     image: docker.elastic.co/kibana/kibana:8.15.2
-    #volumes:
-      #- kibanadata:/usr/share/kibana/data
+      #volumes:
+    #- kibanadata:/usr/share/kibana/data
     ports:
       - 5601:5601
     environment:
@@ -256,7 +258,7 @@ services:
       retries: 120
     networks:
       - microservices
-  # Grafana 
+  # Grafana
   grafana:
     image: grafana/grafana:10.4.3
     container_name: grafana

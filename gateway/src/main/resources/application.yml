@@ -40,6 +40,13 @@ spring:
         #wiretap: true
       #httpclient:
         #wiretap: true
+    sentinel:
+      eager: true
+      filter:
+        enabled: true
+      transport:
+        dashboard: localhost:8858
+        port: 8719
   reactor:
     context-propagation: auto
 
@@ -70,3 +77,10 @@ spring:
               - "GET"
               - "POST"
               - "OPTIONS"
+    sentinel:
+      eager: true
+      filter:
+        enabled: true
+      transport:
+        dashboard: sentinel-dashboard:8080
+        port: 8719

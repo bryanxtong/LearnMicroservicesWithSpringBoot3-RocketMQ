@@ -1,0 +1,15 @@
+[
+  {
+    "resource": "multiplication",
+    "grade": 0,
+    "count": 500,
+    "timeWindow": 10,
+    "slowRatioThreshold": 0.5
+  },
+  {
+    "resource": "gamification",
+    "grade": 1,
+    "count": 0.3,
+    "timeWindow": 20
+  }
+]

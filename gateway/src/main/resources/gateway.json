@@ -1,0 +1,16 @@
+[
+  {
+    "resource": "multiplication",
+    "count": 20,
+    "paramItem": {
+      "parseStrategy": 0
+    }
+  },
+  {
+    "resource": "gamification",
+    "count": 20,
+    "paramItem": {
+      "parseStrategy": 0
+    }
+  }
+]

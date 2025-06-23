@@ -83,12 +83,14 @@ and It now uses opentelemetry collector contrib to collect metrics to prometheus
 and traces to zipkin/jaeger/elasticsearch and logs to loki/elasticsearch, 
 and grafana can be used to view loki logs, elasticsearch logs/traces, and prometheus metrics
 
+```
 Front End: http://localhost:3000
 Grafana: http://localhost:3001/grafana
 Prometheus http://localhost:9090
 Nacos: http://localhost:8082  (nacos/nacos)
 Sentinel Dashboard: http://localhost:8858 (sentinel/sentinel)
 Kibana: http://localhost:5601
+```
 
 See the figure below for a diagram showing the container view.
 

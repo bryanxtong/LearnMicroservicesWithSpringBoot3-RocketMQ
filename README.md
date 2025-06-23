@@ -18,7 +18,7 @@ The main concepts included in this last part of the chapter are:
 * Why would I create Docker images for my applications?
 * Building a simple logger application with Spring Boot and RocketMQ.
 * Distributed traces with OpenTelemetry.
-* Sentinel flow control and circuit breaker control integration.
+* Sentinel flow control and circuit breaker control for Spring Cloud Gateway.
 * Building Docker images for Spring Boot applications with Cloud Native Buildpacks.
 * Container Platforms, Application Platforms, and Cloud Services.
 

@@ -17,27 +17,19 @@ exporters:
     format: proto
 
   #metrics
-  prometheus:
-    endpoint: "0.0.0.0:8889"
-    #tls:
-      #insecure: true 
-      #ca_file: "/path/to/ca.pem"
-      #cert_file: "/path/to/cert.pem"
-      #key_file: "/path/to/key.pem"
-    namespace: test-space
-    #const_labels:
-      #label1: value1
-      #"another label": spaced value
-    send_timestamps: true
-    metric_expiration: 180m
-    enable_open_metrics: true
-    add_metric_suffixes: false
-    resource_to_telemetry_conversion:
-      enabled: true
+  otlphttp/prometheus:
+    endpoint: "http://prometheus:9090/api/v1/otlp"
+    tls:
+      insecure: true
 
   #traces
-  otlp:
-    endpoint: jaeger-all-in-one:4317
+  otlp/jaeger:
+    endpoint: jaeger:4317
+    tls:
+      insecure: true
+  #traces
+  otlp/tempo:
+    endpoint: tempo:4317
     tls:
       insecure: true
   #logs  
@@ -49,6 +41,9 @@ exporters:
   #currently traces and logs  
   elasticsearch:
     endpoint: http://elasticsearch:9200
+    sending_queue:
+      enabled: true
+      queue_size: 1000
     auth:
       authenticator: basicauth
  
@@ -75,11 +70,22 @@ service:
     metrics:
       receivers: [otlp]
       processors: [batch]
-      exporters: [debug,prometheus]
+      exporters: [debug,otlphttp/prometheus]
     traces:
       receivers: [otlp]
       processors: [batch]
-      exporters: [debug,zipkin,otlp,elasticsearch]
+      exporters: [debug,zipkin,otlp/jaeger,otlp/tempo,elasticsearch]
     logs:
       receivers: [otlp]
       exporters: [debug, otlphttp/loki,elasticsearch]
+  telemetry:
+    metrics:
+      level: detailed
+      readers:
+        - periodic:
+            interval: 10000
+            timeout: 5000
+            exporter:
+              otlp:
+                protocol: http/protobuf
+                endpoint: collector:4318

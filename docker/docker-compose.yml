@@ -194,42 +194,55 @@ services:
     networks:
       - microservices
   collector:
-    image: otel/opentelemetry-collector-contrib:0.109.0
+    image: otel/opentelemetry-collector-contrib:0.128.0
     volumes:
       - ./collector-config.yaml:/collector-config.yaml
     command: ["--config=/collector-config.yaml"]
       #expose:
     #- "4318"
     ports:
-      - "4318:4318"
       - "1888:1888"   # pprof extension
       - "8888:8888"   # Prometheus metrics exposed by the collector
       - "8889:8889"   # Prometheus exporter metrics
       - "13133:13133" # health_check extension
       - "4317:4317"   # OTLP gRPC receiver
+      - "4318:4318"   # OTLP HTTP receiver
       - "55679:55679" # zpages extension
     networks:
       - microservices
-
   # Jaeger for traces
-  jaeger-all-in-one:
+  jaeger:
     image: jaegertracing/all-in-one:latest
-    restart: always
+    container_name: jaeger
+    command:
+      - "--memory.max-traces=5000"
+      - "--query.base-path=/jaeger/ui"
+      - "--prometheus.server-url=http://prometheus:9090"
+      - "--prometheus.query.normalize-calls=true"
+      - "--prometheus.query.normalize-duration=true"
+    deploy:
+      resources:
+        limits:
+          memory: 400M
+    restart: unless-stopped
     ports:
       - "16686:16686"
       - "14268"
       - "14250"
+    environment:
+      - METRICS_STORAGE_TYPE=prometheus
     networks:
       - microservices
   #currently for traces and logs
   elasticsearch:
-    image: elasticsearch:8.15.2
+    image: docker.elastic.co/elasticsearch/elasticsearch:9.0.0
     container_name: elasticsearch
     environment:
       discovery.type: single-node
       ES_JAVA_OPTS: "-Xms1024m -Xmx1024m"
       ELASTIC_PASSWORD: changeme
       xpack.security.enabled: false
+      xpack.license.self_generated.type: basic
       xpack.security.http.ssl.enabled: false
     ulimits:
       memlock:
@@ -244,7 +257,7 @@ services:
     healthcheck:
       test: ["CMD-SHELL", "curl --silent --fail --user elastic:changeme localhost:9200/_cluster/health || exit 1"]
       interval: 10s
-      timeout: 10s
+      timeout: 30s
       retries: 3
     networks:
       - microservices
@@ -252,7 +265,7 @@ services:
     depends_on:
       elasticsearch:
         condition: service_healthy
-    image: docker.elastic.co/kibana/kibana:8.15.2
+    image: docker.elastic.co/kibana/kibana:9.0.0
       #volumes:
     #- kibanadata:/usr/share/kibana/data
     ports:
@@ -276,7 +289,8 @@ services:
       - microservices
   # Grafana
   grafana:
-    image: grafana/grafana:10.4.3
+    image: grafana/grafana:12.0.2
+    #image: grafana/grafana:11.6.1
     container_name: grafana
     deploy:
       resources:
@@ -284,7 +298,7 @@ services:
           memory: 300M
     restart: unless-stopped
     environment:
-      - "GF_INSTALL_PLUGINS=grafana-opensearch-datasource"
+      #- GF_INSTALL_PLUGINS=grafana-opensearch-datasource
       - GF_PATHS_PROVISIONING=/etc/grafana/provisioning
       - GF_AUTH_ANONYMOUS_ENABLED=true
       - GF_AUTH_ANONYMOUS_ORG_ROLE=Admin
@@ -305,10 +319,20 @@ services:
     command: -config.file=/etc/loki/local-config.yaml
     networks:
       - microservices
-      
+  tempo:
+    image: grafana/tempo:latest
+    container_name: tempo
+    ports:
+      - "3200:3200"
+    command: [ "-config.file=/etc/tempo.yaml" ]
+    volumes:
+      - ./config/tempo/tempo.yaml:/etc/tempo.yaml
+      - ./tempo-data:/var/tempo
+    networks:
+      - microservices
   # Prometheus
   prometheus:
-    image: quay.io/prometheus/prometheus:v2.52.0
+    image: quay.io/prometheus/prometheus:v3.3.1
     container_name: prometheus
     command:
       - --web.console.templates=/etc/prometheus/consoles
@@ -318,8 +342,10 @@ services:
       - --storage.tsdb.path=/prometheus
       - --web.enable-lifecycle
       - --web.route-prefix=/
+      - --web.enable-otlp-receiver
       - --enable-feature=exemplar-storage
-      - --enable-feature=otlp-write-receiver
+      - --enable-feature=native-histograms
+      - --web.enable-remote-write-receiver
     volumes:
       - ./config/prometheus/prometheus-config.yaml:/etc/prometheus/prometheus-config.yaml
     deploy:

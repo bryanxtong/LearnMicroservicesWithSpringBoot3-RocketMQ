@@ -27,9 +27,10 @@ import com.alibaba.csp.sentinel.slots.block.degrade.DegradeRule;
 import com.alibaba.csp.sentinel.slots.block.flow.FlowRule;
 import com.alibaba.csp.sentinel.slots.block.flow.param.ParamFlowRule;
 import com.alibaba.csp.sentinel.slots.system.SystemRule;
-import com.fasterxml.jackson.databind.DeserializationFeature;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.dataformat.xml.XmlMapper;
+import tools.jackson.databind.DeserializationFeature;
+import tools.jackson.databind.ObjectMapper;
+import tools.jackson.databind.json.JsonMapper;
+import tools.jackson.dataformat.xml.XmlMapper;
 
 import jakarta.annotation.PostConstruct;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -52,9 +53,14 @@ import org.springframework.core.env.Environment;
  * @author <a href="mailto:fangjian0423@gmail.com">Jim</a>
  * @author freeman
  */
-@Configuration(proxyBeanMethods = false)
-@ConditionalOnProperty(name = "spring.cloud.sentinel.enabled", matchIfMissing = true)
-@EnableConfigurationProperties(SentinelProperties.class)
+@Configuration(
+        proxyBeanMethods = false
+)
+@ConditionalOnProperty(
+        name = {"spring.cloud.sentinel.enabled"},
+        matchIfMissing = true
+)
+@EnableConfigurationProperties({SentinelProperties.class})
 public class SentinelAutoConfiguration {
 
     /// /////////////customize start////////////////
@@ -83,101 +89,101 @@ public class SentinelAutoConfiguration {
 
     @Bean
     @ConditionalOnMissingBean
-    @ConditionalOnClass(name = "org.springframework.web.client.RestTemplate")
-    @ConditionalOnProperty(name = "resttemplate.sentinel.enabled", havingValue = "true",
-            matchIfMissing = true)
-    public static SentinelBeanPostProcessor sentinelBeanPostProcessor(
-            ApplicationContext applicationContext) {
+    @ConditionalOnClass(
+            name = {"org.springframework.web.client.RestTemplate"}
+    )
+    @ConditionalOnProperty(
+            name = {"resttemplate.sentinel.enabled"},
+            havingValue = "true",
+            matchIfMissing = true
+    )
+    public static SentinelBeanPostProcessor sentinelBeanPostProcessor(ApplicationContext applicationContext) {
         return new SentinelBeanPostProcessor(applicationContext);
     }
 
     @Bean
     @ConditionalOnMissingBean
-    public SentinelDataSourceHandler sentinelDataSourceHandler(
-            DefaultListableBeanFactory beanFactory, SentinelProperties sentinelProperties,
-            Environment env) {
+    public SentinelDataSourceHandler sentinelDataSourceHandler(DefaultListableBeanFactory beanFactory, SentinelProperties sentinelProperties, Environment env) {
         return new SentinelDataSourceHandler(beanFactory, sentinelProperties, env);
     }
 
-    @ConditionalOnClass(ObjectMapper.class)
-    @Configuration(proxyBeanMethods = false)
+    @ConditionalOnClass({ObjectMapper.class})
+    @Configuration(
+            proxyBeanMethods = false
+    )
     protected static class SentinelConverterConfiguration {
-
-        @Configuration(proxyBeanMethods = false)
+        @Configuration(
+                proxyBeanMethods = false
+        )
         protected static class SentinelJsonConfiguration {
-
-            private ObjectMapper objectMapper = new ObjectMapper();
+            private final ObjectMapper objectMapper;
 
             public SentinelJsonConfiguration() {
-                objectMapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES,
-                        false);
+                this.objectMapper = ((JsonMapper.Builder)JsonMapper.builder().disable(new DeserializationFeature[]{DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES})).build();
             }
 
-            @Bean("sentinel-json-flow-converter")
+            @Bean({"sentinel-json-flow-converter"})
             public JsonConverter jsonFlowConverter() {
-                return new JsonConverter(objectMapper, FlowRule.class);
+                return new JsonConverter(this.objectMapper, FlowRule.class);
             }
 
-            @Bean("sentinel-json-degrade-converter")
+            @Bean({"sentinel-json-degrade-converter"})
             public JsonConverter jsonDegradeConverter() {
-                return new JsonConverter(objectMapper, DegradeRule.class);
+                return new JsonConverter(this.objectMapper, DegradeRule.class);
             }
 
-            @Bean("sentinel-json-system-converter")
+            @Bean({"sentinel-json-system-converter"})
             public JsonConverter jsonSystemConverter() {
-                return new JsonConverter(objectMapper, SystemRule.class);
+                return new JsonConverter(this.objectMapper, SystemRule.class);
             }
 
-            @Bean("sentinel-json-authority-converter")
+            @Bean({"sentinel-json-authority-converter"})
             public JsonConverter jsonAuthorityConverter() {
-                return new JsonConverter(objectMapper, AuthorityRule.class);
+                return new JsonConverter(this.objectMapper, AuthorityRule.class);
             }
 
-            @Bean("sentinel-json-param-flow-converter")
+            @Bean({"sentinel-json-param-flow-converter"})
             public JsonConverter jsonParamFlowConverter() {
-                return new JsonConverter(objectMapper, ParamFlowRule.class);
+                return new JsonConverter(this.objectMapper, ParamFlowRule.class);
             }
-
         }
 
-        @ConditionalOnClass(XmlMapper.class)
-        @Configuration(proxyBeanMethods = false)
+        @ConditionalOnClass({XmlMapper.class})
+        @Configuration(
+                proxyBeanMethods = false
+        )
         protected static class SentinelXmlConfiguration {
-
-            private XmlMapper xmlMapper = new XmlMapper();
+            private final XmlMapper xmlMapper;
 
             public SentinelXmlConfiguration() {
-                xmlMapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES,
-                        false);
+                this.xmlMapper = ((XmlMapper.Builder)XmlMapper.builder().disable(new DeserializationFeature[]{DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES})).build();
             }
 
-            @Bean("sentinel-xml-flow-converter")
+            @Bean({"sentinel-xml-flow-converter"})
             public XmlConverter xmlFlowConverter() {
-                return new XmlConverter(xmlMapper, FlowRule.class);
+                return new XmlConverter(this.xmlMapper, FlowRule.class);
             }
 
-            @Bean("sentinel-xml-degrade-converter")
+            @Bean({"sentinel-xml-degrade-converter"})
             public XmlConverter xmlDegradeConverter() {
-                return new XmlConverter(xmlMapper, DegradeRule.class);
+                return new XmlConverter(this.xmlMapper, DegradeRule.class);
             }
 
-            @Bean("sentinel-xml-system-converter")
+            @Bean({"sentinel-xml-system-converter"})
             public XmlConverter xmlSystemConverter() {
-                return new XmlConverter(xmlMapper, SystemRule.class);
+                return new XmlConverter(this.xmlMapper, SystemRule.class);
             }
 
-            @Bean("sentinel-xml-authority-converter")
+            @Bean({"sentinel-xml-authority-converter"})
             public XmlConverter xmlAuthorityConverter() {
-                return new XmlConverter(xmlMapper, AuthorityRule.class);
+                return new XmlConverter(this.xmlMapper, AuthorityRule.class);
             }
 
-            @Bean("sentinel-xml-param-flow-converter")
+            @Bean({"sentinel-xml-param-flow-converter"})
             public XmlConverter xmlParamFlowConverter() {
-                return new XmlConverter(xmlMapper, ParamFlowRule.class);
+                return new XmlConverter(this.xmlMapper, ParamFlowRule.class);
             }
-
         }
-
     }
 
 }

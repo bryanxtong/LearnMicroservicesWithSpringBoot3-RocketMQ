@@ -7,39 +7,41 @@ spring:
     loadbalancer:
       enabled: true
     gateway:
-      discovery:
-        locator:
-          enabled: true
-      routes:
-        - id: multiplication
-          uri: lb://multiplication/
-          predicates:
-            - Path=/challenges/**,/attempts/**,/users/**
-        - id: gamification
-          uri: lb://gamification/
-          predicates:
-            - Path=/leaders
-      globalcors:
-        cors-configurations:
-          '[/**]':
-            allowedOrigins: "http://localhost:3000"
-            allowedHeaders:
-              - "*"
-            allowedMethods:
-              - "GET"
-              - "POST"
-              - "OPTIONS"
-      default-filters:
-        - name: Retry
-          args:
-            retries: 3
-            methods: GET,POST
-      observability:
-        enabled: true
-      #httpserver:
-        #wiretap: true
-      #httpclient:
-        #wiretap: true
+      server:
+        webflux:
+          discovery:
+            locator:
+              enabled: true
+          routes:
+            - id: multiplication
+              uri: lb://multiplication/
+              predicates:
+                - Path=/challenges/**,/attempts/**,/users/**
+            - id: gamification
+              uri: lb://gamification/
+              predicates:
+                - Path=/leaders
+          globalcors:
+            cors-configurations:
+              '[/**]':
+                allowedOrigins: "http://localhost:3000"
+                allowedHeaders:
+                  - "*"
+                allowedMethods:
+                  - "GET"
+                  - "POST"
+                  - "OPTIONS"
+          default-filters:
+            - name: Retry
+              args:
+                retries: 3
+                methods: GET,POST
+          observability:
+            enabled: true
+            #httpserver:
+            #wiretap: true
+            #httpclient:
+            #wiretap: true
     sentinel:
       eager: true
       filter:
@@ -65,18 +67,20 @@ spring:
       on-profile: docker
   cloud:
     gateway:
-      globalcors:
-        cors-configurations:
-          '[/**]':
-            allowedOrigins:
-              - "http://challenges-frontend:3000"
-              - "http://localhost:3000"
-            allowedHeaders:
-              - "*"
-            allowedMethods:
-              - "GET"
-              - "POST"
-              - "OPTIONS"
+      server:
+        webflux:
+          globalcors:
+            cors-configurations:
+              '[/**]':
+                allowedOrigins:
+                  - "http://challenges-frontend:3000"
+                  - "http://localhost:3000"
+                allowedHeaders:
+                  - "*"
+                allowedMethods:
+                  - "GET"
+                  - "POST"
+                  - "OPTIONS"
     sentinel:
       eager: true
       filter:
